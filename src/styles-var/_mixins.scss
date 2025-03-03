@@ -1,0 +1,44 @@
+@use './colors' as colors;
+
+$text-variants: (
+    project_abbr: (10px, 400, 11.72px, 0%),
+    project_text: (14px, 400, 16.41px, 0%),
+    header-button: (14px, 400, 16.41px, 0%),
+    list-item: (14px, 400, 16.41px, 0%),
+    item-full-name: (18px, 400, 21.09px, 0%),
+    table-th:(14px, 400, 18.2px, 0.1px),
+    table-td:(14px, 400, 18.2px, 0.1px),
+);
+
+
+@mixin text($variant) {
+    $values: map-get($text-variants, $variant);
+
+    font-family: 'Roboto', sans-serif;
+    font-size: nth($values, 1);
+    font-weight: nth($values, 2);
+    line-height: nth($values, 3);
+    letter-spacing: nth($values, 4);
+}
+  
+
+// @include mixins.text(_);
+
+@mixin borderbr($weight: 1px, $color: colors.$block-line) {
+    border-bottom: $weight solid $color;
+    border-right: $weight solid $color;
+}
+
+// @include mixins.borderbr();
+
+@mixin borderb($weight: 1px, $color: colors.$block-line) {
+    border-bottom: $weight solid $color;
+}
+
+// @include mixins.borderb();
+
+@mixin borderr($weight: 1px, $color: colors.$block-line) {
+    border-right: $weight solid $color;
+}
+
+// @include mixins.borderr();
