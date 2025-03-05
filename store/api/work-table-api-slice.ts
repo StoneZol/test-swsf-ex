@@ -11,7 +11,7 @@ export interface ServerTaskResponse {
 
 export const api = createApi({
   reducerPath: 'workTableApiSlice',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://185.244.172.108:8081' }),
+  baseQuery: fetchBaseQuery({ baseUrl: 'http://185.244.172.108:8081' }),
   endpoints: (builder) => ({
     getDataTable: builder.query<TaskProps[], void>({
         query: () => `/v1/outlay-rows/entity/${eID}/row/list`,

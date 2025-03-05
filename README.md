@@ -5,7 +5,8 @@
 
 ### Деплой
 
-[Versel](https://test-swsf-ex.versel.app)
+[Versel](https://test-swsf-ex-yozs.vercel.app)
+[GitHubPages](https://stonezol.github.io/test-swsf-ex/)
 
 
 ## Содержание
