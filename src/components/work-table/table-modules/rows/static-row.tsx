@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
-import { TaskProps } from "../../work-table";
 import styles from "./rows.module.scss"
+import { TaskProps } from "../../work-table-inreface";
 
  export interface StaticRowProps {
     task: TaskProps;

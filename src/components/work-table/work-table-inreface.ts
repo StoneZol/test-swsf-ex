@@ -12,4 +12,5 @@ export interface TaskProps {
       mimExploitation?: number;
       supportCosts?: number;
       total?: number;
+      parentId?: number | null;
     }
