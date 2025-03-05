@@ -1,54 +1,100 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Проект Test SWSF Ex
 
-Currently, two official plugins are available:
+Этот проект — тестовое задание для создания сайта по макету в Figma. Он построен с использованием **TypeScript**, **React** и **SASS**, а также использует **RTK Query** и **MUI** для работы с API и стилизации компонентов.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Деплой
 
-## Expanding the ESLint configuration
+[Versel](https://test-swsf-ex.versel.app)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Содержание
+1. [Настройка проекта](#настройка-проекта)
+2. [Интеграция с API](#интеграция-с-api)
+3. [Разработка локально](#разработка-локально)
+
+## Настройка проекта
+
+### Требования
+- **TypeScript**
+- **React**
+- **SASS**
+- **RTK Query** (опционально)
+- **MUI** + **styled-components** (опционально)
+- **Vite** как сборщик
+
+### Зависимости
+- `@mantine/core` и `@mantine/hooks` для компонентов UI
+- `@reduxjs/toolkit` для управления состоянием
+- `react`, `react-dom`, `react-redux` для настройки React
+- `sass` для стилизации
+
+### Разработческие зависимости
+- `@eslint/js`, `eslint`, и `typescript-eslint` для линтинга и поддержки TypeScript
+- `vite` для работы с сервером разработки и сборкой проекта
+
+Чтобы начать, клонируйте репозиторий и установите зависимости:
+
+```bash
+git clone https://github.com/StoneZol/test-swsf-ex
+cd test-swsf-ex
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Интеграция с API
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Базовый URL API:
+API доступно по адресу:  
+[API Base URL](http://185.244.172.108:8081/)
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### Документация API:
+Полную документацию можно найти по ссылке:  
+[API Документация](http://185.244.172.108:8081/swagger-ui/index.html?url=/openapi.json#/)
+
+### Основные эндпоинты API:
+
+1. **Создание сущности**:
+   - URL: `/v1/outlay-rows/entity/create`
+   - Метод: `POST`
+   - Описание: Эта операция выполняется один раз для создания общей сущности. Возвращаемое значение `eID` будет использоваться для дальнейших взаимодействий с API.
+
+2. **Получение строк**:
+   - URL: `/v1/outlay-rows/entity/{eID}/row/list`
+   - Метод: `GET`
+   - Описание: Получает все строки для конкретной сущности. Этот запрос должен выполняться только один раз при загрузке страницы. Последующие обновления должны обрабатываться локально.
+
+3. **Создание строки**:
+   - URL: `/v1/outlay-rows/entity/{eID}/row/create`
+   - Метод: `POST`
+   - Описание: Этот эндпоинт используется для создания новой строки. Пользователь может нажать на иконку существующей строки для создания новой, которая будет инициализирована нулями (кроме заголовка).
+
+4. **Обновление строки**:
+   - URL: `/v1/outlay-rows/entity/{eID}/row/{rID}/update`
+   - Метод: `POST`
+   - Описание: Этот эндпоинт используется для обновления существующей строки после её редактирования. Для этого нужно дважды кликнуть по строке.
+
+5. **Удаление строки**:
+   - URL: `/v1/outlay-rows/entity/{eID}/row/{rID}/delete`
+   - Метод: `DELETE`
+   - Описание: Удаляет строку при клике на иконку корзины.
+
+### Обработка ответов API:
+- **Создание, обновление, удаление**: После выполнения операции сервер возвращает массив обновленных строк. Эти данные следует использовать для обновления локального состояния.
+- **Локальные обновления**: Локальные данные должны обновляться без повторных запросов к серверу. Новые данные нужно запрашивать только при первой загрузке страницы.
+
+## Разработка локально
+
+Чтобы запустить сервер разработки, выполните:
+
+```bash
+npm run dev
+```
+
+Сервер разработки будет доступен по адресу `http://localhost:5173`.
+
+### Сборка проекта:
+Для сборки проекта в продакшен:
+
+```bash
+npm run build
 ```

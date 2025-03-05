@@ -23,7 +23,7 @@ export function buildHierarchyMap(tasks: TaskProps[], depth = 0, activeLevels: n
   
       return result;
     });
-  }
+}
 
 export function getConnectors(hierarchyMap: number[][], rowIndex: number) {
     return (
@@ -49,4 +49,4 @@ export function getConnectors(hierarchyMap: number[][], rowIndex: number) {
         }
       </div>
     )
-  }
+}

@@ -1,60 +1,9 @@
 import { ReactNode, useEffect, useState } from "react";
-import styles from "./work-table.module.scss"
 import { EditedRow, StaticRow } from "./table-modules/rows";
 import { ControlButtons } from "./table-modules/control-buttons";
 import { TaskProps } from "./work-table-inreface";
 import { useCreateRowTableMutation, useDeleteRowTableMutation, useUpdateRowTableMutation } from "../../../store/api/work-table-api-slice";
 import { buildHierarchyMap, getConnectors } from "./helpers";
-
-// function buildHierarchyMap(tasks: TaskProps[], depth = 0, activeLevels: number[] = []): number[][] {
-//     return tasks.flatMap((task, index, array) => {
-//       const isLast = index === array.length - 1;
-//       const newActiveLevels = [...activeLevels];
-  
-//       if (depth === 0 && index === 0) {
-//         // Корневой объект всегда [-1]
-//         return [[-1], ...buildHierarchyMap(task.child ?? [], depth + 1, newActiveLevels)];
-//       }
-  
-//       // Генерация текущей строки на основе активных уровней
-//       const row = newActiveLevels.map((v) => v).concat(2);
-//       const result = [row];
-  
-//       // Если есть потомки, добавляем новый уровень
-//       if ((task.child ?? []).length > 0) {
-//         newActiveLevels.push(isLast ? 0 : 1);
-//         result.push(...buildHierarchyMap(task.child ?? [], depth + 1, newActiveLevels));
-//       }
-  
-//       return result;
-//     });
-//   }
-
-// function getConnectors(hierarchyMap: number[][], rowIndex: number) {
-//     return (
-//       <div className={styles.list_connection}>
-//         {
-//           hierarchyMap[rowIndex].map((value, index) => {
-//             if (value === -1) return null;
-//             if (value === 0)
-//               return <div key={index} className={styles.connect}></div>;
-//             if (value === 1)
-//               return <div key={index} className={styles.connect}>
-//                   <div className={styles.centerVerticalLine}></div>
-//               </div>;
-//             if (value === 2)
-//               return (
-//                 <div key={index} className={styles.connect}>
-//                   <div className={styles.centerHorizontalHalfLine}></div>
-//                   <div className={styles.centerVerticalLine}></div>
-//                 </div>
-//               );
-//             return null;
-//           })
-//         }
-//       </div>
-//     )
-//   }
 
 export default function useWorkTable(initialData:TaskProps[], isLoading: boolean){
     const [data, setData] = useState(initialData ?? []);
@@ -80,7 +29,6 @@ export default function useWorkTable(initialData:TaskProps[], isLoading: boolean
         addTask(null); // Добавляем задачу только один раз, когда загрузка завершена и данных нет
       }
       if (data.length > 0) {
-        // setEditedTask(null)
         setEditingId(null)
         setIsFull(true)
       }
@@ -90,9 +38,6 @@ export default function useWorkTable(initialData:TaskProps[], isLoading: boolean
       if (data.length === 0) {
         setIsFull(false)
       }
-      // if (data.length > 0) {
-      //   setIsFull(true)
-      // }
     }, [data]);
 
     let globalIndex = 0;
@@ -111,8 +56,7 @@ export default function useWorkTable(initialData:TaskProps[], isLoading: boolean
   
           return task;
       });
-  };
-  
+    };
   
     const handleChange = (id: number, field: keyof TaskProps, value: number | string) => {
       setEditingId(id)
@@ -156,7 +100,6 @@ export default function useWorkTable(initialData:TaskProps[], isLoading: boolean
         }
         return
       }
-      else {
         try {
           const response = await updateRow({ rID:editingId!, body: editedTask });
           if ('data' in response && response.data) {
@@ -180,8 +123,7 @@ export default function useWorkTable(initialData:TaskProps[], isLoading: boolean
         } catch (error) {
           console.error("Ошибка при сохранении задачи:", error);
         }
-      }
-    };
+  };
     
   const addTask = (parentId: number | null) => {
 
