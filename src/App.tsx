@@ -1,11 +1,12 @@
-import { useState } from 'react'
 import Layout from './components/layout/layout'
+import '@mantine/core/styles.css'
+import WorkTable from './components/work-table/work-table'
 
 function App() {
 
   return (
   <Layout>
-    тест
+    <WorkTable/>
   </Layout>
   )
 }

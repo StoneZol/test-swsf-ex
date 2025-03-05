@@ -1,0 +1,35 @@
+@use '/src/styles-var/colors' as colors;
+@use '/src/styles-var/mixins' as mixins;
+
+.table_row{
+    td:nth-child(2){
+        width: 30%;
+    }
+    td{
+        padding: 0 20px;
+        height: 60px;
+        @include mixins.borderb();
+        @include mixins.text(table-body);
+        color: colors.$default-text-color;
+        input{
+            background-color: transparent;
+            color: colors.$default-text-color;
+            width: 100%;
+            height: 36px;
+            @include mixins.border();
+            @include mixins.borderRadius();
+        }
+    }
+}
+
+.level{
+    position: relative;
+    &:hover{
+        .control_buttons{
+            background-color: colors.$button-cd-bg;
+            .control_button:last-child{
+                visibility: visible;
+            }
+        }
+    }
+}
