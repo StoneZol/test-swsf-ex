@@ -11,14 +11,14 @@ export interface ServerTaskResponse {
 
 export const api = createApi({
   reducerPath: 'workTableApiSlice',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://185.244.172.108:8081' }),
+  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
   endpoints: (builder) => ({
     getDataTable: builder.query<TaskProps[], void>({
-        query: () => `/v1/outlay-rows/entity/${eID}/row/list`,
+        query: () => `/outlay-rows/entity/${eID}/row/list`,
     }),
     createRowTable: builder.mutation<ServerTaskResponse, Partial<TaskProps>>({
         query: (body) => ({
-            url: `/v1/outlay-rows/entity/${eID}/row/create`,
+            url: `/outlay-rows/entity/${eID}/row/create`,
             method: 'POST',
             body,
         }) 
@@ -26,13 +26,13 @@ export const api = createApi({
     
     deleteRowTable: builder.mutation<void, number>({
         query: (rID) => ({
-          url: `/v1/outlay-rows/entity/${eID}/row/${rID}/delete`,
+          url: `/outlay-rows/entity/${eID}/row/${rID}/delete`,
           method: 'DELETE',
         })
       }),
     updateRowTable: builder.mutation<ServerTaskResponse, { rID: number; body: Partial<TaskProps> }>({
         query: ({ rID, body }) => ({
-          url: `/v1/outlay-rows/entity/${eID}/row/${rID}/update`,
+          url: `/outlay-rows/entity/${eID}/row/${rID}/update`,
           method: 'POST',
           body,
         }),
