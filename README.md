@@ -1,13 +1,11 @@
 
 # Проект Test SWSF Ex
 
-Этот проект — тестовое задание для создания сайта по макету в Figma. Он построен с использованием **TypeScript**, **React** и **SASS**, а также использует **RTK Query** и **MUI** для работы с API и стилизации компонентов.
+Этот проект — тестовое задание для создания сайта по макету в Figma. Он построен с использованием **TypeScript**, **React** и **SASS**, а также использует **RTK Query** для работы с API и стилизации компонентов.
 
 ### Деплой
 
-[Versel](https://test-swsf-ex-yozs.vercel.app)
-[GitHubPages](https://stonezol.github.io/test-swsf-ex/)
-
+[Versel](https://test-swsf-ex.vercel.app/)
 
 ## Содержание
 1. [Настройка проекта](#настройка-проекта)
