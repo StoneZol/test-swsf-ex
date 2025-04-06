@@ -50,3 +50,37 @@ export function getConnectors(hierarchyMap: number[][], rowIndex: number) {
       </div>
     )
 }
+
+export const updateTaskTree = ( tasks: TaskProps[], taskId: number | null, updateFn: (task: TaskProps) => TaskProps): TaskProps[] => {
+  return tasks.map((task) => {
+      if (task.id === taskId) {
+          return updateFn(task);
+      }
+
+      if (task.child) {
+          return { ...task, child: updateTaskTree(task.child, taskId, updateFn) };
+      }
+
+      return task;
+  });
+};
+
+export const updateTaskTreeWithChanges = (
+  tasks: TaskProps[],
+  changedTasks: TaskProps[]
+): TaskProps[] => {
+  return tasks.map((task) => {
+    const changed = changedTasks.find((t) => t.id === task.id);
+    if (changed) {
+      return {
+        ...changed,
+        child: task.child ? updateTaskTreeWithChanges(task.child, changedTasks) : [],
+      };
+    }
+
+    return {
+      ...task,
+      child: task.child ? updateTaskTreeWithChanges(task.child, changedTasks) : [],
+    };
+  });
+};

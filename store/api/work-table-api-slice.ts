@@ -23,13 +23,13 @@ export const api = createApi({
             body,
         }) 
     }),
+    deleteRowTable: builder.mutation<ServerTaskResponse, number>({
+      query: (rID) => ({
+        url: `/v1/outlay-rows/entity/${eID}/row/${rID}/delete`,
+        method: 'DELETE',
+      })
+    }),
     
-    deleteRowTable: builder.mutation<void, number>({
-        query: (rID) => ({
-          url: `/v1/outlay-rows/entity/${eID}/row/${rID}/delete`,
-          method: 'DELETE',
-        })
-      }),
     updateRowTable: builder.mutation<ServerTaskResponse, { rID: number; body: Partial<TaskProps> }>({
         query: ({ rID, body }) => ({
           url: `/v1/outlay-rows/entity/${eID}/row/${rID}/update`,

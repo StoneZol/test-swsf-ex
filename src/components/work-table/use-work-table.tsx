@@ -3,7 +3,7 @@ import { EditedRow, StaticRow } from "./table-modules/rows";
 import { ControlButtons } from "./table-modules/control-buttons";
 import { TaskProps } from "./work-table-inreface";
 import { useCreateRowTableMutation, useDeleteRowTableMutation, useUpdateRowTableMutation } from "../../../store/api/work-table-api-slice";
-import { buildHierarchyMap, getConnectors } from "./helpers";
+import { buildHierarchyMap, getConnectors, updateTaskTree, updateTaskTreeWithChanges } from "./helpers";
 
 export default function useWorkTable(initialData:TaskProps[], isLoading: boolean){
     const [data, setData] = useState(initialData ?? []);
@@ -44,20 +44,6 @@ export default function useWorkTable(initialData:TaskProps[], isLoading: boolean
   
     const objMap = buildHierarchyMap(data);
   
-    const updateTaskTree = ( tasks: TaskProps[], taskId: number | null, updateFn: (task: TaskProps) => TaskProps): TaskProps[] => {
-      return tasks.map((task) => {
-          if (task.id === taskId) {
-              return updateFn(task);
-          }
-  
-          if (task.child) {
-              return { ...task, child: updateTaskTree(task.child, taskId, updateFn) };
-          }
-  
-          return task;
-      });
-    };
-  
     const handleChange = (id: number, field: keyof TaskProps, value: number | string) => {
       setEditingId(id)
       setData((data) =>
@@ -72,58 +58,50 @@ export default function useWorkTable(initialData:TaskProps[], isLoading: boolean
       }
     };
 
+    const updateDataAndState = (
+      prevData: TaskProps[],
+      editedTask: TaskProps,
+      current: TaskProps,
+      changed: TaskProps[]
+    ) => {
+      let updatedData = prevData;
+      updatedData = updateTaskTree(updatedData, editedTask.id, (task) => ({
+        ...task,
+        id: current.id,
+      }));
+      updatedData = updateTaskTreeWithChanges(updatedData, changed);
+    
+      setData(updatedData);
+      setEditedTask((prev) => ({
+        ...prev!,
+        id: current.id,
+      }));
+      setEditingId(null);
+      setIsNew(false);
+      setIsFull(true);
+    };
+
     const handleSave = async () => {
       if (!editedTask) return;
-      if (isNew){
-        try {
-          const response = await createRow(editedTask);
-          if ('data' in response && response.data) {
-            const newId = response.data.current.id;
-            setData((prevData) =>
-              updateTaskTree(prevData, editedTask.id, (task) => ({
-                ...task,
-                id: newId,
-              }))
-            );
-      
-            setEditedTask((prev) => {
-              const updatedTask = prev ? { ...prev, id: newId } : prev;
-              return updatedTask;
-            });
-      
-            setEditingId(null);
-            setIsNew(false)
-            setIsFull(true)
-          }
-        } catch (error) {
-          console.error("Ошибка при сохранении задачи:", error);
+    
+      try {
+        let response;
+        if (isNew) {
+          response = await createRow(editedTask);
+        } else {
+          response = await updateRow({ rID: editingId!, body: editedTask });
         }
-        return
+    
+        if ('data' in response && response.data) {
+          const { current, changed } = response.data;
+          
+          updateDataAndState(data, editedTask, current, changed!);
+        }
+      } catch (error) {
+        console.error("Ошибка при сохранении задачи:", error);
       }
-        try {
-          const response = await updateRow({ rID:editingId!, body: editedTask });
-          if ('data' in response && response.data) {
-            const newId = response.data.current.id;
-            setData((prevData) =>
-              updateTaskTree(prevData, editedTask.id, (task) => ({
-                ...task,
-                id: newId,
-              }))
-            );
-    
-            setEditedTask((prev) => {
-              const updatedTask = prev ? { ...prev, id: newId } : prev;
-              return updatedTask;
-            });
-    
-            setEditingId(null);
-            setIsNew(false);
-            setIsFull(true)
-          }
-        } catch (error) {
-          console.error("Ошибка при сохранении задачи:", error);
-        }
-  };
+    };
+
     
   const addTask = (parentId: number | null) => {
 
@@ -170,22 +148,41 @@ export default function useWorkTable(initialData:TaskProps[], isLoading: boolean
     setEditedTask(task)
     setIsNew(false)
   }
-  
-  const removeTask = (id : number) => {
-    if (editingId !== null ) return
+
+  const removeTask = async (id: number) => {
+    if (editingId !== null) return;
     if (!confirm("Подтвердите удаление")) return;
-      deleteRow(id)
-        .then(() => {
-        const filterTasks = (tasks : TaskProps[]) : TaskProps[] => tasks
-        .filter((task) => task.id !== id)
-        .map((task) => ({...task, child: task.child
-                            ? filterTasks(task.child)
-                            : []
-          }));
   
-        setData((data)=> filterTasks(data));
-        })
+    try {
+      const response = await deleteRow(id);
+  
+      if ('data' in response && response.data) {
+        const { changed } = response.data;
+  
+        setData((prevData) => {
+          let updatedData = prevData;
+          const filterTasks = (tasks: TaskProps[]): TaskProps[] =>
+            tasks
+              .filter((task) => task.id !== id)
+              .map((task) => ({
+                ...task,
+                child: task.child ? filterTasks(task.child) : [],
+              }));
+  
+          updatedData = filterTasks(updatedData);
+  
+          if (changed && changed.length > 0) {
+            updatedData = updateTaskTreeWithChanges(updatedData, changed);
+          }
+  
+          return updatedData;
+        });
+      }
+    } catch (error) {
+      console.error("Ошибка при удалении задачи:", error);
+    }
   };
+  
   
   const renderRows = (tasks : TaskProps[], level = 0, parentHasChild : boolean[] = []): ReactNode[] => tasks.flatMap((task) => {
       const currentHasChild = !!task.child && task.child.length > 0;
